@@ -1,3 +1,10 @@
 .venv
 .env
+
+# Oracle Instant Client
 instantclient_*/
+
+# Temp Files
+*.pyc
+*.generated
+data/
