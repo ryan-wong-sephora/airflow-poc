@@ -177,7 +177,7 @@ with DAG(
         """
 
         # Convert DataFrame to list of tuples for executemany
-        batch_size = 25000
+        batch_size = 5000
         inserted_rows = 0
 
         # Process in batches

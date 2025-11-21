@@ -259,7 +259,7 @@ with DAG(
 
         csv_path = _download_to_local()
         insert_df = _load_and_transform(csv_path)
-        inserted_rows = _load_into_oracle_batched(insert_df, batch_size=20000)
+        inserted_rows = _load_into_oracle_batched(insert_df, batch_size=5000)
 
         etl_end = time.perf_counter()
         elapsed = etl_end - etl_start
