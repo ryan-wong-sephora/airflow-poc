@@ -40,7 +40,7 @@ oracledb.init_oracle_client(
 )
 
 with DAG(
-    dag_id="sftp_to_oracle_pick_performance",
+    dag_id="sftp_to_oracle_pick_performance_v1",
     start_date=datetime(2025, 1, 1),
     schedule=None, # manually execute for POC
     catchup=False,
@@ -110,7 +110,7 @@ with DAG(
         # Data transformations using pandas (vectorized operations)
         df["dc_name"] = DC_CONST
         df["wh_id"] = WH_ID_CONST
-        df["current_qty"] = pd.to_numeric(df["Cur. qty."], errors="coerce").astype("Int64")
+        df["current_qty"] = pd.to_numeric(df["Cur. qty."], errors="coerce")
         df["prtnum"] = df["Article number"]
         df["user_id"] = df["PIN Code"].fillna("").str.strip().str.upper()
         df["pick_station"] = df["Article number"]
@@ -123,7 +123,7 @@ with DAG(
         business_date = (datetime.now() - timedelta(days=1)).date()
         df["business_date"] = business_date
 
-        df["pick_duration"] = pd.to_numeric(df["Pick duration [s]"], errors="coerce").astype("Int64")
+        df["pick_duration"] = pd.to_numeric(df["Pick duration [s]"], errors="coerce")
 
         # Select only the columns we need for insertion
         insert_df = df[[
@@ -172,21 +172,12 @@ with DAG(
                 BUSINESS_DATE
             )
             VALUES (
-                :dc_name,
-                :wh_id,
-                :current_qty,
-                :prtnum,
-                :user_id,
-                :pick_station,
-                :start_time,
-                :end_time,
-                :pick_duration,
-                :business_date
+                :1, :2, :3, :4, :5, :6, :7, :8, :9, :10
             )
         """
 
         # Convert DataFrame to list of tuples for executemany
-        batch_size = 50000
+        batch_size = 25000
         inserted_rows = 0
 
         # Process in batches
@@ -198,7 +189,7 @@ with DAG(
 
             cursor.executemany(insert_sql, batch_data)
             inserted_rows += len(batch_data)
-            print(f"Processed {inserted_rows} rows so far")
+            # print(f"Processed {inserted_rows} rows so far")
 
         print(f"Committing {inserted_rows} rows to database...")
         conn.commit()

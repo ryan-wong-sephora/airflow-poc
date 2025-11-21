@@ -8,3 +8,4 @@ instantclient_*/
 *.pyc
 *.generated
 data/
+logs/
